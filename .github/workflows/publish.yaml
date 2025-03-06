@@ -1,9 +1,14 @@
-name: Publish
+name: Build and publish
 
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
   push:
     branches: ['feature/github_actions']
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
 
 env:
   REGISTRY: ghcr.io
@@ -29,15 +34,21 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: images/25.04
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
