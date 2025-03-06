@@ -1,4 +1,5 @@
-FROM ubuntu:25.04
+ARG BASE=25.04
+FROM ubuntu:${BASE}
 
 RUN apt-get update && env DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends \
