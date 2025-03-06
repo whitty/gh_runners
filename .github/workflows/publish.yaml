@@ -19,7 +19,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: 25.04
+          # currently all images are common from the origina 25.04 one
+          - os: "25.04"
+            dir: images/25.04
+          - os: "24.10"
+            dir: images/25.04
+          - os: "20.04"
             dir: images/25.04
     env:
       IMAGE_NAME: whitty/gh_ubuntu_${{ matrix.os }}
