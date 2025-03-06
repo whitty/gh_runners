@@ -1,18 +1,28 @@
-name: Publish
+name: Build and publish
 
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
   push:
-    branches: ['main']
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
 
 env:
   REGISTRY: ghcr.io
-  # TODO version encoding
-  IMAGE_NAME: whitty/gh_ubuntu_25.04
 
 jobs:
   build-and-push-image:
+    name: Build for ${{ matrix.os }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: 25.04
+            dir: images/25.04
+    env:
+      IMAGE_NAME: whitty/gh_ubuntu_${{ matrix.os }}
     permissions:
       contents: read
       packages: write
@@ -29,15 +39,22 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: images/25.04
-          push: true
+          context: ${{ matrix.dir }}
+          build-args: BASE=${{ matrix.os }}
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
