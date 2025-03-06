@@ -3,7 +3,7 @@ name: Publish
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
   push:
-    branches: ['main']
+    branches: ['feature/github_actions']
 
 env:
   REGISTRY: ghcr.io
