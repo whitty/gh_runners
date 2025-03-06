@@ -4,6 +4,7 @@ name: Build and publish
 on:
   workflow_dispatch:
   push:
+    branches: ['feature/github_actions']
     tags:
       - 'v*'
   pull_request:
