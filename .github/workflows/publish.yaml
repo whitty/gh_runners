@@ -12,7 +12,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: whitty/gh_ubuntu_${{ matrix.os }}
 
 jobs:
   build-and-push-image:
@@ -22,6 +21,8 @@ jobs:
       matrix:
         os:
           - 25.04
+    env:
+      IMAGE_NAME: whitty/gh_ubuntu_${{ matrix.os }}
     permissions:
       contents: read
       packages: write
