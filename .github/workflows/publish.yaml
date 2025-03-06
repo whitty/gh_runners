@@ -3,6 +3,7 @@ name: Build and publish
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
   push:
+    branches: ['feature/github_actions']
     tags:
       - 'v*'
   pull_request:
