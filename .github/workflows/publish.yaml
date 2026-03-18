@@ -24,6 +24,8 @@ jobs:
             dir: images/25.04
           - os: "25.10"
             dir: images/25.04
+          - os: "26.04"
+            dir: images/25.04
           - os: "20.04"
             dir: images/25.04
     env:
